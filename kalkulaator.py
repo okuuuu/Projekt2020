@@ -6,31 +6,34 @@ class Valem:
 
 # Kui siia lisada valemid kujul Valem("valemi nimi", "array muutujatega", "vastavate muutujate kaudu avaldused") siis oskab programm need valemid avaldada
 kõik_valemid = [
-    Valem("kiiruse valem", ["s", "v", "t"], ["v*t", "s/t", "s/v"])]
+    Valem("kiiruse arvutamise valem", ["s", "v", "t"], ["v*t", "s/t", "s/v"]),
+    Valem("võnkeperioodi arvutamis valem", ["T", "t", "N"], ["t/N", "T*N", "t/T"])]
 
-def arvuta(usr_choice):
-    variables = []
-    print("Sisestage järgnevate muutujate väärtused, kui väärtust ei eksisteeri siis ärge sisestage midagi")
-    for v in usr_choice.muutujad:
-        variables.append(input(v + " - "))
+# usr_valem on index arrayst kõik_valemid. arvuta on kas True või False vastavalt sellele kas arvutatakse valemi väärtus või lihtsalt kuvatakse valem.
+def opereeri(usr_valem, usr_var, arvuta):
+    variables = {}
+    valem = usr_valem.valemid[usr_var]
+    if arvuta:
+        for i, v in enumerate(usr_valem.muutujad):
+            if i != usr_var:
+                variables[v] = input(v + "- ")
+        for v in variables:
+            valem = valem.replace(v, variables[v])
+        valem = str(eval(valem))
+    print(usr_valem.muutujad[usr_var] + "= " + valem)
 
 def main():
     print("Tere!")
     print("See kalkulaator suudab viib valemi õigele kujule kui sisestate vastavad muutujad")
-    print("Hetkel toetame vastavaid valemarvutusi:")
+    print("Hetkel toetame vastavaid valemarvutusi:\n")
     for i, x in enumerate(kõik_valemid):
-        print(str(i+1) + ". " + x.nimi + "\n")
-    usr_choice = kõik_valemid[int(input("Valige vastav valem: "))-1]
-    operation = int(input("Hetkel suudab kalkulaator (1) avaldada muutuja või (2) vastava muutuja välja arvutada, mida teha soovite? "))
-    if  operation == 2:
-        print(arvuta(usr_choice))
-    elif operation == 1:
-        print("Valem sisaldab järgmisi muutujadid")
-        for i, v in enumerate(usr_choice.muutujad):
-            print(str(i+1) + ". " + v)
-        avaldatav_muutuja = int(input("Millise muutuja kaudu soovite valemi avaldada? ")) - 1
+        print(str(i+1) + ". " + x.nimi + " " + x.muutujad[0] + "=" + x.valemid[0])
+    usr_valem = kõik_valemid[int(input("\nValige vastav valem: "))-1]
+    usr_var = usr_valem.muutujad.index(input("Millise muutuja kaudu soovite valemi avaldada? "))
 
-        print(usr_choice.muutujad[avaldatav_muutuja] + "=" + usr_choice.valemid[avaldatav_muutuja])
+    operation = True if int(input("\nKuvan lihtsalt valemi = 1\nArvutan kindlate väärtustega = 2\n\nValik: ")) == 2 else False
+
+    opereeri(usr_valem, usr_var, operation)
 
 main()
 
