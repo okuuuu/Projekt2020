@@ -1,1 +1,3 @@
-# Projekt2020
+# Kalkulaator
+* Sisend kõik muutujad - 1
+* Väljastab kõik muutujad ning kommentaarid
