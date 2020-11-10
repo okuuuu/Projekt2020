@@ -1,8 +1,8 @@
 from tkinter import *
 from yhik import yhikud
+from kalkulaator import valem
 
-def fcn2():
-    return
+
 def fcn3():
     return
 
@@ -18,7 +18,7 @@ Welcome = Label(root, text="Püütoni loodusteaduse\nkalkulaator", width = 48, h
 Welcome.grid(row=0,column=0,columnspan=3)
 
 Kalk1 = Kalk("Kalk1", 16, 3, 1, 0, yhikud)
-Kalk2 = Kalk("Kalk2", 16, 3, 1, 1, fcn2)
+Kalk2 = Kalk("Kalk2", 16, 3, 1, 1, valem)
 Kalk3 = Kalk("Kalk3", 16, 3, 1, 2, fcn3)
 
 root.mainloop()
