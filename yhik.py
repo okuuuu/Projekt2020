@@ -14,19 +14,22 @@
 # value = float(INPUT[0])*prefix[INPUT[1][0]]/prefix[OUTPUT[0]]
 # print("Your quantity in main units is: {:.{}E} {}".format(value, sigfig-1, OUTPUT))
 
-#Наладить расчет валью для основных и производных единиц.
-
 ###########
 from tkinter import *
 def yhikud():
-    INPUT = None
+    INPUT, dec = None, None
     OUTPUT = StringVar()
     OUTPUT.set("null")
     
     def enter(event):
-        nonlocal INPUT, OUTPUT
+        nonlocal INPUT, OUTPUT, dec
         INPUT = entry1.get()
         INPUT = INPUT.split()
+        if '.' in INPUT[0]:
+            dec = 10**int(len(INPUT[0].split('.')[1]))
+        else:
+            dec = 1
+        INPUT[0] = float(INPUT[0])*dec
         i = 0
         for x in prefix:
             notmain = x + INPUT[1][1:len(INPUT[1])]
@@ -39,15 +42,16 @@ def yhikud():
     def sel(new_units):
         if len(INPUT[1])>1 and INPUT[1][0] in prefix:
             if len(new_units)>1 and new_units[0] in prefix:
-                value = float(INPUT[0])*prefix[INPUT[1][0]]/prefix[new_units[0]]
+                value = INPUT[0]*prefix[INPUT[1][0]]/prefix[new_units[0]]/dec
             else:
-                value = float(INPUT[0])*prefix[INPUT[1][0]]
+                value = INPUT[0]*prefix[INPUT[1][0]]/dec
         else:
             if len(new_units)>1 and new_units[0] in prefix:
-                value = float(INPUT[0])/prefix[new_units[0]]
+                value = INPUT[0]/prefix[new_units[0]]/dec
             else:
-                value = float(INPUT[0])
-        sigfig = len(INPUT[0])
+                value = INPUT[0]/dec
+        sigfig = len(str(int(INPUT[0])))
+        print(INPUT[0], sigfig)
         entry2.delete(0, END)
         entry2.insert(0, "{:.{}E} {}".format(value, sigfig-1, new_units))
         
