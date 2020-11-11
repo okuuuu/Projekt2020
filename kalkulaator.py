@@ -96,6 +96,16 @@ def valem():
 #         with open("valemid.pickle", "wb") as f:
 #             pickle.dump(kõik_valemid, f)
     
+    def ResetButtons():
+        for k in Radios:
+            Radios[k].destroy()
+        for i in range(len(kõik_valemid)):
+            Radios['r'+str(i)] = Radiobutton(aken, text = str(i+1), variable = usr_valem, value = i, command = muut)
+            Radios['r'+str(i)].grid(column=2+i, row=1)
+        for i, x in enumerate(kõik_valemid[usr_valem.get()].muutujad):
+            Radios['rr'+str(i)] = Radiobutton(aken, text = x, variable = usr_var, value = kõik_valemid[usr_valem.get()].muutujad.index(x), command = lambda: opereeri(kõik_valemid[usr_valem.get()], usr_var.get(), operation.get()))
+            Radios['rr'+str(i)].grid(column=2+i, row=3)
+    
     def lisa_valem():
         def enter1(event):
             def enter2(event):
@@ -108,11 +118,7 @@ def valem():
                     for i, x in enumerate(kõik_valemid):
                         WelcMsg+=("\n" + str(i+1) + ". " + x.nimi + " " + x.muutujad[0] + "=" + x.valemid[0])
                     Welcome.config(text = WelcMsg)
-                    for k in Radios:
-                        Radios[k].destroy()
-                    for i in range(len(kõik_valemid)):
-                        Radios['r'+str(i)] = Radiobutton(aken, text = str(i+1), variable = usr_valem, value = i, command = lambda: muut(usr_valem.get()))
-                        Radios['r'+str(i)].grid(column=2+i, row=1)
+                    ResetButtons()
                     LV.destroy()
                 muutujad = []
                 avaldused_ent = dict()
@@ -152,11 +158,7 @@ def valem():
             for i, x in enumerate(kõik_valemid):
                 WelcMsg+=("\n" + str(i+1) + ". " + x.nimi + " " + x.muutujad[0] + "=" + x.valemid[0])
             Welcome.config(text = WelcMsg)
-            for k in Radios:
-                Radios[k].destroy()
-            for i in range(len(kõik_valemid)):
-                Radios['r'+str(i)] = Radiobutton(aken, text = str(i+1), variable = usr_valem, value = i, command = lambda: muut(usr_valem.get()))
-                Radios['r'+str(i)].grid(column=2+i, row=1)
+            ResetButtons()
             EV.destroy()
             
         EV = Toplevel()
@@ -168,11 +170,10 @@ def valem():
 #         with open("valemid.pickle", "wb") as f:
 #             pickle.dump(kõik_valemid, f)
     
-    def muut(valem):
-        for i, x in enumerate(kõik_valemid[valem].muutujad):
-            Radiobutton(aken, text = x, variable = usr_var, value = kõik_valemid[valem].muutujad.index(x), command = lambda: opereeri(kõik_valemid[valem], usr_var.get(), operation.get())).grid(column=2+i, row=3)
-        Radiobutton(aken, text = "Kuvan lihtsalt valemi", variable = operation, value = 0, command = lambda: opereeri(kõik_valemid[valem], usr_var.get(), operation.get())).grid(column=2, row=4)
-        Radiobutton(aken, text = "Arvutan kindlate väärtustega", variable = operation, value = 1, command = lambda: opereeri(kõik_valemid[valem], usr_var.get(), operation.get())).grid(column=3, row=4)
+    def muut():
+        ResetButtons()
+        Radiobutton(aken, text = "Kuvan lihtsalt valemi", variable = operation, value = 0, command = lambda: opereeri(kõik_valemid[usr_valem.get()], usr_var.get(), operation.get())).grid(column=2, row=4)
+        Radiobutton(aken, text = "Arvutan kindlate väärtustega", variable = operation, value = 1, command = lambda: opereeri(kõik_valemid[usr_valem.get()], usr_var.get(), operation.get())).grid(column=3, row=4)
     
     def opereeri(usr_valem, usr_var, oper):
         def arvuta():
@@ -210,15 +211,15 @@ def valem():
     ValEem = Button(aken, text = "Eemaldada valemeid", command = eemalda_valem).grid(column=1, row=99)
     Label(aken, text = "Valige vastav valem:").grid(row=0, column=2, columnspan=50)
     usr_valem = IntVar()
-    usr_valem.set(0)
     usr_var = IntVar()
-    usr_var.set(0)
     operation = IntVar()
+    usr_valem.set(0)
+    usr_var.set(0)
     operation.set(0)
     Entries = dict()
     Radios = dict()
     for i in range(len(kõik_valemid)):
-        Radios['r'+str(i)] = Radiobutton(aken, text = str(i+1), variable = usr_valem, value = i, command = lambda: muut(usr_valem.get()))
+        Radios['r'+str(i)] = Radiobutton(aken, text = str(i+1), variable = usr_valem, value = i, command = muut)
         Radios['r'+str(i)].grid(column=2+i, row=1)
     Label(aken, text = "Millise muutuja kaudu soovite valemi avaldada?").grid(row=2, column=2, columnspan=3)
     
