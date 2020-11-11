@@ -17,8 +17,8 @@ root.title("LTKalk")
 Welcome = Label(root, text="Püütoni loodusteaduse\nkalkulaator", width = 48, height = 5, relief=GROOVE)
 Welcome.grid(row=0,column=0,columnspan=3)
 
-Kalk1 = Kalk("Kalk1", 16, 3, 1, 0, yhikud)
-Kalk2 = Kalk("Kalk2", 16, 3, 1, 1, valem)
-Kalk3 = Kalk("Kalk3", 16, 3, 1, 2, fcn3)
+Kalk1 = Kalk("Ühikute\nteisendamine", 16, 3, 1, 0, yhikud)
+Kalk2 = Kalk("Valemi\nkalkulaator", 16, 3, 1, 1, valem)
+Kalk3 = Kalk("WIP", 16, 3, 1, 2, fcn3)
 
 root.mainloop()
