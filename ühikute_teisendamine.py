@@ -53,14 +53,24 @@ def analyse_unit(unit):
 
 # print(analyse_unit(input("unit in - ")))
 
-#SISEND = sisendühik,väljundühik(nt mm, km, mmA), VÄLJUND = ennik kujul(sisendühiku nimetus, väljendühiku nimetus, kordaja)
+#SISEND = sisendühik,väljundühik(nt mm, km, mmA) (kui väljund on tühi "" siis teisendab põhiühikuks
+#VÄLJUND = ennik kujul(sisendühiku nimetus, väljendühiku nimetus, kordaja)
+# Väljundi näide (('mg', 'milligramm'), ('kg', 'kilogramm'), 1000000)
 def unit_cal(unit_in, unit_out):
     try:
         unit_in_parameters = analyse_unit(unit_in)
-        unit_out_parameters = analyse_unit(unit_out)
+        if unit_out == "":
+            if unit_in_parameters[1][0] == "g":
+                unit_out_parameters = analyse_unit("kg")
+            else:
+                unit_out_parameters = analyse_unit(unit_in_parameters[1][0])
+        else:
+            unit_out_parameters = analyse_unit(unit_out)
         if unit_in_parameters[1][0] != unit_out_parameters[1][0]:
             raise ValueError("Ühikud on erinevad tüüpi. Sisesta samad ühikud.")
-        return (unit_in_parameters[0][1]+unit_in_parameters[1][1], unit_out_parameters[0][1]+unit_out_parameters[1][1], 10**(unit_out_parameters[0][2]-unit_in_parameters[0][2]))
+        unit_in_description = (unit_in_parameters[0][0]+unit_in_parameters[1][0], unit_in_parameters[0][1]+unit_in_parameters[1][1])
+        unit_out_description = (unit_out_parameters[0][0]+unit_out_parameters[1][0], unit_out_parameters[0][1]+unit_out_parameters[1][1])
+        return (unit_in_description, unit_out_description, 10**(unit_out_parameters[0][2]-unit_in_parameters[0][2]))
     except:
         raise ValueError("Selliseid väärtused kalkulaator ei toeta")
 
@@ -76,6 +86,6 @@ def main():
 
     tulemus = unit_cal(algne_ühik, lõpu_ühik)
 
-    print("\nSelleks, et saada " + tulemus[0] + "ist " + tulemus[1] + " peate korrutama arvu " + str(tulemus[2]) + "ga")
+    print("\nSelleks, et saada " + tulemus[0][1] + "ist " + tulemus[1][1] + " peate korrutama arvu " + str(tulemus[2]) + "ga")
 
 main()
