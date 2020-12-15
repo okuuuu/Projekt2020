@@ -1,37 +1,14 @@
-si_prefixes = {
-        "Y":("Y","yotta",24),
-        "Z":("Z","zetta",21),
-        "E":("E","exa",18),
-        "P":("P","peta",15),
-        "T":("T","tera",12),
-        "G":("G","giga",9),
-        "M":("M","mega",6),
-        "k":("k","kilo",3),
-        "h":("h","hecto",2),
-        "da":("da","deca",1),
-        "d":("d","deci",-1),
-        "c":("c","centi",-2),
-        "m":("m","milli",-3),
-        "lambda":("lambda","micro",-6),
-        "n":("n","nano",-9),
-        "p":("p","pico",-12),
-        "f":("f","femto",-15),
-        "a":("a","atto",-18),
-        "z":("z","zepto",-21),
-        "y":("y","yocto",-24)}
+import json
 
-tüved = {
-        "s":("s","sekund"),
-        "m":("m","meeter"),
-        "g":("g","gramm"),
-        "A":("A","amper"),
-        "K":("K","kelvin"),
-        "mol":("mol","mool"),
-        "cd":("cd","kandela")}
+with open('ühikute_teisendamise_andmed.json', 'r', encoding='UTF-8') as f:
+    data = json.load(f)
+    si_prefixes = data.get('si_prefixes')
+    tüved = data.get('tüved')
+
 
 # Väljundi näide (('k', 'kilo', 3), ('g', 'gramm'))
 def analyse_unit(unit):
-    #EESLIITE PUUDUMISE KORRAL
+#EESLIITE PUUDUMISE KORRAL
     if unit in tüved:
         prefix = ("","",0)
 
@@ -87,5 +64,3 @@ def main():
     tulemus = unit_cal(algne_ühik, lõpu_ühik)
 
     print("\nSelleks, et saada " + tulemus[0][1] + "ist " + tulemus[1][1] + " peate korrutama arvu " + str(tulemus[2]) + "ga")
-
-main()
