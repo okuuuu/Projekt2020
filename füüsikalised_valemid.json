@@ -1,0 +1,12 @@
+{
+    "kiiruse arvutamise valem": {
+        "s": "v*t",
+        "v": "s/t",
+        "t": "s/v"
+    },
+    "võnkeperioodi arvutamise valem": {
+        "s": "v*t",
+        "v": "s/t",
+        "t": "s/v"
+    }
+}
