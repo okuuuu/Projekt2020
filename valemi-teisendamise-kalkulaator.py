@@ -3,7 +3,7 @@ import json
 class TeisendusKalkulaator:
     def __init__(self, file_name):
         self.file_name = file_name
-        with open('./'+file_name+'.json', 'a+') as f:
+        with open('./valemid/'+file_name+'.json', 'a+') as f:
             try:
                 self.valemid = json.load(f)
             except:
@@ -24,12 +24,12 @@ class TeisendusKalkulaator:
     
     def lisa_valem(self, valem):
         self.valemid.update(valem)
-        with open('./'+self.file_name+'.json', 'w+') as f:
+        with open('./valemid/'+self.file_name+'.json', 'w+') as f:
             json.dump(self.valemid, f, indent=4, ensure_ascii=False)
 
     def eemalda_valem(self, valem):
         del self.valemid[valem]
-        with open('./'+self.file_name+'.json', 'w+') as f:
+        with open('./valemid/'+self.file_name+'.json', 'w+') as f:
             json.dump(self.valemid, f, indent=4, ensure_ascii=False)
 
     def get_valemid(self):
