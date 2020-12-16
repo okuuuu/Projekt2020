@@ -1,31 +1,17 @@
 import json
 from os import listdir
 
-class ValemiKalkulaator:
-
-    # siin luuakse muutuja valemiklassid mis sisaldab kõiki valemeid mis hetkel salvestatud on
-    #try:
-    #    with open('./valemid/valemiklassid.json', 'r') as f:
-    #        valemiklassid = json.load(f)
-    #except:
+def get_valemiklassid():
     with open('./valemid/valemiklassid.json', 'w+') as f:
         valemiklassid = list(map(lambda el: el.removesuffix('.json'), listdir('./valemid')))
         valemiklassid.remove('valemiklassid')
         json.dump(valemiklassid, f, indent=4, ensure_ascii=False)
+        return valemiklassid
 
-    #@staticmethod
-    #def refresh_valemiklassid():
-    #    with open('./valemid/valemiklassid.json', 'w+') as f:
-    #        valemiklassid = list(map(lambda el: el.removesuffix('.json'), listdir('./valemid')))
-    #        valemiklassid.remove('valemiklassid')
-    #        json.dump(valemiklassid, f, indent=4, ensure_ascii=False)
-
+class ValemiKalkulaator:
 
     # konstruktor loob uue faili nt ValemiKalkulaator("füüsikalised valemid")
     def __init__(self, file_name):
-        with open('./valemid/valemiklassid.json', 'w+') as f:
-            self.valemiklassid.append(file_name)
-            json.dump(self.valemiklassid, f, indent=4, ensure_ascii=False)
         self.file_name = file_name
         try:
             with open('./valemid/'+file_name+'.json', 'r+') as f:
@@ -40,12 +26,13 @@ class ValemiKalkulaator:
     # funktsioon teisenda võtab esimeseks argumendiks konkreetse valemi ja teiseks muutuja
     # kiiruse valemi puhul: teisenda("kiiruse arvutamise valem", "v")
     def teisenda(self, valem, väljund):
-        return self.valemid.get(valem).get(väljund)
+        return (väljund, self.valemid.get(valem).get(väljund)[0])
 
     #funktsioon arvuta sisenda on analoogne funktsioon teisenda sisendiga kuid nüüd on kolmandaks sisendiks muutujate väärtused vastavalt selles järjekorras nagu nad valemi sõnastikus esinevad.
     #kiiruse valemi puhul: arvuta("kiiruse arvutamise valem", "v", [10,4])
     def arvuta(self, valem, väljund, väärtused):
-        self.valem = self.teisenda(valem, väljund)
+        self.valem = self.teisenda(valem, väljund)[1]
+        print(self.valem)
         self.i = 0
         for x in self.valemid.get(valem):
             if x != väljund:
@@ -71,4 +58,7 @@ class ValemiKalkulaator:
             json.dump(self.valemid, f, indent=4, ensure_ascii=False)
 
     def get_valemid(self):
-        return self.valemid
+        return list(self.valemid.keys())
+
+    def get_valem(self, valem):
+        return self.valemid.get(valem)

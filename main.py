@@ -1,58 +1,103 @@
 from tkinter import *
-import ühikute_teisendamise_kalkulaator as ük
-from valemite_teisendamise_kalkulaator import ValemiKalkulaator as vk
+import re
+import ühikute_teisendamise_kalkulaator
+import valemite_teisendamise_kalkulaator 
 
 def ühikute_kalkulaator():
         print("Tere!")
         print("See kalkulaator suudab ühikuid teisendada.")
         print("Toetame kõiki SI-süsteemi eesliiteid ja põhiühikuid")
         if input("Kas soovite eesliiteid näha? (y/n) - ") == "y":
-            print(ük.si_prefixes.keys())
+            print(ühikute_teisendamise_kalkulaator.si_prefixes.keys())
 
             algne_ühik = input("Mis ühikust soovite teisendus teha (nt mm, kg jne.) - ")
             lõpu_ühik = input("Mis ühikuks soovite vastuse saada (nt cm, dg jne.) - ")
 
-            tulemus = ük.unit_cal(algne_ühik, lõpu_ühik)
+            tulemus = ühikute_teisendamise_kalkulaator.unit_cal(algne_ühik, lõpu_ühik)
 
             print("\nSelleks, et saada " + tulemus[0][1] + "ist " + tulemus[1][1] + " peate korrutama arvu " + str(tulemus[2]) + "ga")
 
-def valemite_kalkulaator():
+def kalkulaator():
+        def print_kalkulaatorid(toetatud_kalkulaatorid):
+            for i, x in enumerate(toetatud_kalkulaatorid):
+                kalkulaator = valemite_teisendamise_kalkulaator.ValemiKalkulaator(x)
+                print(str(i+1) + ". " + x)
+                for vi, valem in enumerate(kalkulaator.get_valemid()):
+                    print("\t" + str(i+1) + "." + str(vi+1) + ". " + valem)
+
         print("Tere!")
         print("See kalkulaator suudab viib valemi õigele kujule kui sisestate vastavad muutujad")
         print("Hetkel toetame vastavaid kalkulaatoreid:\n")
-        supported_calc = vk.valemiklassid
 
-        for i, calc in enumerate(supported_calc):
-            print(str(i+1) + ". " + calc)
+        toetatud_kalkulaatorid =  valemite_teisendamise_kalkulaator.get_valemiklassid()
+        print_kalkulaatorid(toetatud_kalkulaatorid)
 
-        if input("Kas soovite näha milliseid valemeid vastavad kalkulaatorid toetavad? (y/n) - ") == "y":
-            index = int(input("Palun sisestage indeks: "))
-            print(vk(supported_calc[index-1]).get_valemid())
+        kalkulaatori_indeks = int(input("Mis kalkulaatorid soovite kasutada? (sisesta indeks) - "))-1
+        kalkulaator = valemite_teisendamise_kalkulaator.ValemiKalkulaator(toetatud_kalkulaatorid[kalkulaatori_indeks])
+        kalkulaatori_valemid = kalkulaator.get_valemid()
 
-        if input("-- Kas soovite valemeid lisada (y/n) - ") == "y":
+        def valemite_lisamine():
                 muutujad = {}
                 nimi = input("Mis on valemi nimi? ")
                 x = int(input("Mitu erinevat muutujat on valemis? "))
                 for i in range(x):
-                    muutujad[input("Sisesta " + str(i+1) + ". muutuja tähistus: ")] = ""
+                    muutujad[input("Sisesta " + str(i+1) + ". muutuja tähistus: ")] = []
 
-                print(muutujad)
                 print("Kasutades Pythoni syntaxi, kuidas vastavad muutujad avalduvad: " + " ".join(muutujad.keys()))
                 for muutuja in muutujad:
-                    muutujad[muutuja] = input(muutuja + "= ")
-                vk(nimi).lisa_valem({nimi:muutujad})
+                    muutujad[muutuja].append(str(input(muutuja + "= ")))
 
-        if input("-- Kas soovite valemeid eemaldada (y/n) - ") == "y":
-            #Näitan kõik kalkulaatorid
-            for i, calc in enumerate(supported_calc):
-                print(str(i+1) + ". " + calc)
-            calc = int(input('Millisest kalkulaatorist?: '))-1
+                print("Mis on muutujate si-põhiühikud?")
+                for muutuja in muutujad:
+                    si_ühik = input(muutuja + "= ")
+                    muutujad[muutuja].append(si_ühik)
 
-            #Näitan vastava kalkulaatori valemid
-            for i, x in enumerate(vk(supported_calc[calc]).get_valemid().keys()):
-                print(str(i+1) + ". " + x)
-            indeks = int(input('Milline valem?: '))-1
+                kalkulaator.lisa_valem({nimi:muutujad})
 
-            vk(supported_calc[calc]).eemalda_valem(list(vk(supported_calc[calc]).get_valemid().keys())[indeks])
+        def valemite_eemaldamine():
+        #if input("-- Kas soovite valemeid eemaldada (y/n) - ") == "y":
+            for i, valem in enumerate(kalkulaatori_valemid):
+                print("\t" + str(i+1) + ". " + valem)
 
-valemite_kalkulaator()
+            eemaldatav_valem = kalkulaatori_valemid[int(input('Milline valem?: '))-1]
+            kalkulaator.eemalda_valem(eemaldatav_valem)
+
+        def arvuta():
+            valemi_indeks = int(input('Milline valem?: ' + str(kalkulaatori_indeks+1) + "."))-1
+            valemi_nimi = kalkulaatori_valemid[valemi_indeks]
+            valem = kalkulaator.get_valem(valemi_nimi)
+
+            muutujad = list(kalkulaator.get_valem(valemi_nimi).keys())
+            print("\tMuutujad: " + ",".join(muutujad))
+            muutuja = input('Milline muutuja? - ')
+
+            if input("-- Kas soovite arvutada konkreetsete muutuja väärtustega (y/n) - ") == "y":
+                muutujate_väärtused = []
+                muutujad.remove(muutuja)
+                for x in muutujad:
+                    muutuja_väärtus = input(x + "= ")
+                    match = re.search('\D*$',muutuja_väärtus)
+                    if match:
+                        ühik = match.group()
+                        kordaja = ühikute_teisendamise_kalkulaator.unit_cal(ühik, "")[2]
+                        muutuja_väärtus_põhiühikutes = kordaja * float(muutuja_väärtus.removesuffix(ühik))
+                    muutujate_väärtused.append(float(muutuja_väärtus_põhiühikutes))
+
+                arvuta = kalkulaator.arvuta(valemi_nimi, muutuja, muutujate_väärtused)
+
+                tulemuse_ühik = str(valem.get(muutuja)[1]) if match else ""
+
+                print(muutuja + "= " + arvuta[0] +  "= " + str(arvuta[1]) + tulemuse_ühik)
+            else:
+                teisenda =  kalkulaator.teisenda(valemi_nimi, muutuja)
+                print(teisenda[0] + "= " + teisenda[1])
+
+        function_dict = {'valemite lisamine':valemite_lisamine,
+                         'valemite_eemaldamine':valemite_eemaldamine,
+                         'teisendamine/arvutamine':arvuta}
+
+        for i, x in enumerate(function_dict):
+            print(str(i+1) + ". " + x)
+
+        function_dict[list(function_dict.keys())[int(input("Sisesta operatsiooni indeks "))-1]]()
+kalkulaator()

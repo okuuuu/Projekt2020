@@ -1,7 +1,17 @@
 {
     "kiiruse arvutamise valem": {
-        "s": "v*t",
-        "v": "s/t",
-        "t": "s/v"
+        "s": [
+            "v*t",
+            "m"
+        ],
+        "v": [
+            "s/t",
+            "m/s"
+        ],
+        "t": [
+            "s/v",
+            "s"
+        ]
     }
+
 }
