@@ -1,6 +1,7 @@
 from tkinter import *
 import pickle
 
+#Valemite šabloon
 class Valem:
     def __init__(self, nimi, muutujad, valemid):
         self.nimi = nimi
@@ -12,75 +13,10 @@ kõik_valemid = [
     Valem("kiiruse arvutamise valem", ["s", "v", "t"], ["v*t", "s/t", "s/v"]),
     Valem("võnkeperioodi arvutamis valem", ["T", "t", "N"], ["t/N", "T*N", "t/T"])]
 
-# usr_valem on index arrayst kõik_valemid. arvuta on kas True või False vastavalt sellele kas arvutatakse valemi väärtus või lihtsalt kuvatakse valem.
-def opereeri(usr_valem, usr_var, arvuta):
-    variables = {}
-    valem = usr_valem.valemid[usr_var]
-    if arvuta:
-        for i, v in enumerate(usr_valem.muutujad):
-            if i != usr_var:
-                variables[v] = input(v + "- ")
-        for v in variables:
-            valem = valem.replace(v, variables[v])
-        valem = str(eval(valem))
-    print(usr_valem.muutujad[usr_var] + "= " + valem)
-
-
-def lisa_valem():
-    muutujad = []
-    muutujate_avaldused = []
-    nimi = input("Mis on valemi nimi? ")
-    x = int(input("Mitu erinevat muutujat on valemis? "))
-    for i in range(x):
-        muutujad.append(input("Sisesta " + str(i+1) + ". muutuja tähistus: "))
-    print("Kasutades Pythoni syntaxi, kuidas vastavad muutujad avalduvad: (" + ",".join(muutujad) + ")")
-    for i in range(x):
-        muutujate_avaldused.append(input(muutujad[i] + "= "))
-    kõik_valemid.append(Valem(nimi, muutujad, muutujate_avaldused))
-    with open("valemid.pickle", "wb") as f:
-        pickle.dump(kõik_valemid, f)
-
-def eemalda_valem():
-    print("Kõik valemid on järgmised")
-    for i, x in enumerate(kõik_valemid):
-        print(str(i+1) + ". " + x.nimi)
-    del kõik_valemid[int(input("Millist soovite eemaldada, sisestage jrk nr - "))-1]
-    with open("valemid.pickle", "wb") as f:
-        pickle.dump(kõik_valemid, f)
-
-def main():
-    global kõik_valemid
-    try:
-        with open("valemid.pickle", "rb") as f:
-            kõik_valemid = pickle.load(f)
-    except:
-        with open("valemid.pickle", "wb") as f:
-            pickle.dump(kõik_valemid, f)
-    print("Tere!")
-    print("See kalkulaator suudab viib valemi õigele kujule kui sisestate vastavad muutujad")
-    print("Hetkel toetame vastavaid valemarvutusi:\n")
-    for i, x in enumerate(kõik_valemid):
-        print(str(i+1) + ". " + x.nimi + " " + x.muutujad[0] + "=" + x.valemid[0])
-    print("\n")
-    if input("-- Kas soovite valemeid lisada (y/n) - ") == "y":
-        lisa_valem()
-        print("\n\n\n")
-        return main()
-    elif input("-- Kas soovite valemeid eemaldada (y/n) - ") == "y":
-        eemalda_valem()
-        print("\n\n\n")
-        return main()
-    usr_valem = kõik_valemid[int(input("-- Millise valemiga soovite opereerida? (jrk nr) - "))-1]
-    usr_var = usr_valem.muutujad.index(input("-- Millise muutuja kaudu soovite valemi avaldada (" + ",".join(usr_valem.muutujad) + ") - "))
-
-    arvutan = True if input("-- Arvutan tulemusi koos kindlate muutujate väärtustega? (y/n) - ") == "y" else False
-
-    opereeri(usr_valem, usr_var, arvutan)
-#main()
-
 def valem():
     global kõik_valemid
     
+    #vaatab, kas on juba olemas pickle fail salvestatud infoga
     try:
         with open("valemid.pickle", "rb") as f:
             kõik_valemid = pickle.load(f)
@@ -88,15 +24,19 @@ def valem():
         with open("valemid.pickle", "wb") as f:
             pickle.dump(kõik_valemid, f)
     
+    #Kustutab kõik vanad raadionupud ja paneb neid uuesti
     def ResetButtons():
         for k in Radios:
             Radios[k].destroy()
+        #Esimene rida raadionuppe
         for i in range(len(kõik_valemid)):
             Radios['r'+str(i)] = Radiobutton(aken, text = str(i+1), variable = usr_valem, value = i, command = ResetButtons)
             Radios['r'+str(i)].grid(column=2+i, row=1, sticky=W)
+        #Valemile vastavad muutujad
         for i, x in enumerate(kõik_valemid[usr_valem.get()].muutujad):
             Radios['rr'+str(i)] = Radiobutton(aken, text = x, variable = usr_var, value = kõik_valemid[usr_valem.get()].muutujad.index(x), command = lambda: opereeri(kõik_valemid[usr_valem.get()], usr_var.get(), operation.get()))
             Radios['rr'+str(i)].grid(column=2+i, row=3,sticky=W)
+        #Kaks suurt radionuppu ja nende paigutamine
         Radios['val'] = Radiobutton(aken, text = "Kuvan lihtsalt valemi", variable = operation, value = 0, command = lambda: opereeri(kõik_valemid[usr_valem.get()], usr_var.get(), operation.get()))
         Radios['vaar'] = Radiobutton(aken, text = "Arvutan kindlate väärtustega", variable = operation, value = 1, command = lambda: opereeri(kõik_valemid[usr_valem.get()], usr_var.get(), operation.get()))
         if len(kõik_valemid) <= 3:
@@ -195,9 +135,9 @@ def valem():
         Answer.grid(column=0, row=100, columnspan=100)
     
     aken = Toplevel()
-    for k in range(7):
+    for k in range(15):
         aken.grid_columnconfigure(k,weight=1)
-    for k in range(9):
+    for k in range(15):
         aken.grid_rowconfigure(k,weight=1)
     
     aken.title("Valemid")
@@ -217,6 +157,7 @@ def valem():
     operation.set(0)
     Entries = dict()
     Radios = dict()
+    #Esimene rida raadionuppe. Valemi valimine
     for i in range(len(kõik_valemid)):
         Radios['r'+str(i)] = Radiobutton(aken, text = str(i+1), variable = usr_valem, value = i, command = ResetButtons)
         Radios['r'+str(i)].grid(column=2+i, row=1)
